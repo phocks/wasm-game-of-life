@@ -15,6 +15,9 @@ extern "C" {
 }
 
 extern crate js_sys;
+extern crate rand;
+
+use rand::Rng;
 
 #[wasm_bindgen]
 #[repr(u8)]
@@ -89,13 +92,16 @@ impl Universe {
   }
 
   pub fn new() -> Universe {
-    let width = 32;
-    let height = 32;
+    let width = 200;
+    let height = 200;
 
     let cells = (0..width * height)
       .map(|_i| {
         // if i % 9 == 0 || i % 2 == 0 {
-        if js_sys::Math::random() < 0.5 {
+        let mut rng = rand::thread_rng();
+        let y: f64 = rng.gen(); // generates a float between 0 and 1
+        // if js_sys::Math::random() < 0.5 {
+        if y < 0.5 {
           Cell::Alive
         } else {
           Cell::Dead
@@ -113,6 +119,18 @@ impl Universe {
   pub fn render(&self) -> String {
     self.to_string()
   }
+
+  pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
+    }
 }
 
 impl fmt::Display for Universe {
